@@ -1,0 +1,90 @@
+{% extends "main/_layout.html" %}
+
+{% block title %}{{ student.full_name }} — Журнал успеваемости{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ student.full_name }}</h1>
+    <a href="{{ url_for('main.group_detail', group_id=group.id) }}" class="btn-link">&larr; к группе {{ group.name }}</a>
+</div>
+
+<section class="panel summary-panel">
+    <div>
+        <span class="summary-label">Группа</span>
+        <span class="summary-value">{{ group.name }}</span>
+    </div>
+    <div>
+        <span class="summary-label">Средний балл</span>
+        <span class="summary-value">{{ student.average_grade if student.average_grade else '—' }}</span>
+    </div>
+    <div>
+        <span class="summary-label">Всего оценок</span>
+        <span class="summary-value">{{ student.grades|length }}</span>
+    </div>
+</section>
+
+<section class="panel">
+    <h3>Выставить оценку</h3>
+    <form method="POST" action="{{ url_for('main.add_grade', student_id=student.id) }}" class="inline-form">
+        <select name="subject_id" required>
+            <option value="" disabled selected>Предмет...</option>
+            {% for subject in all_subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="value" required>
+            <option value="" disabled selected>Оценка...</option>
+            {% for v in [5, 4, 3, 2] %}
+                <option value="{{ v }}">{{ v }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="comment" placeholder="Комментарий (необязательно)">
+        <button type="submit" class="btn btn-primary">Выставить</button>
+    </form>
+</section>
+
+<section class="panel">
+    <h3>История оценок</h3>
+    {% if student.grades %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Предмет</th>
+                <th>Оценка</th>
+                <th>Комментарий</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grade in student.grades %}
+            <tr>
+                <td>{{ grade.date_given.strftime('%d.%m.%Y') }}</td>
+                <td>{{ grade.subject.name }}</td>
+                <td><span class="badge badge-grade-{{ grade.value }}">{{ grade.value }}</span></td>
+                <td>{{ grade.comment or '—' }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('main.delete_grade', grade_id=grade.id) }}"
+                          onsubmit="return confirm('Удалить эту оценку?');">
+                        <button type="submit" class="btn btn-danger btn-small">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">Оценок пока нет.</p>
+    {% endif %}
+</section>
+{% endblock %}
+
+{# Демонстрация {{ super() }}: сохраняем базовый скрипт из base.html
+   и добавляем к нему скрипт, специфичный для этой страницы. #}
+{% block scripts %}
+{{ super() }}
+<script>
+    // Подсвечиваем выбранный предмет в истории оценок при наведении на select.
+    console.log('Страница студента: {{ student.full_name }} загружена.');
+</script>
+{% endblock %}

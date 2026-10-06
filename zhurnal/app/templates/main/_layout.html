@@ -1,0 +1,17 @@
+{# _layout.html — второй уровень наследования: extends base.html и в свою очередь
+   сам предоставляет блок page_content для конкретных страниц раздела main/. #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <a class="sidebar-link {{ 'active' if request.endpoint == 'main.dashboard' else '' }}"
+           href="{{ url_for('main.dashboard') }}">🏠 Мои группы</a>
+        <a class="sidebar-link {{ 'active' if request.endpoint == 'main.profile' else '' }}"
+           href="{{ url_for('main.profile') }}">👤 Профиль</a>
+    </aside>
+    <section class="page-content">
+        {% block page_content %}{% endblock %}
+    </section>
+</div>
+{% endblock %}

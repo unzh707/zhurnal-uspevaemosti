@@ -1,0 +1,32 @@
+{% extends "main/_layout.html" %}
+
+{% block title %}Профиль — Журнал успеваемости{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Профиль преподавателя</h1>
+</div>
+
+<section class="panel">
+    <form method="POST" action="{{ url_for('main.profile') }}" class="form">
+        <label for="last_name">Фамилия</label>
+        <input type="text" id="last_name" name="last_name" value="{{ current_user.profile.last_name }}" required>
+
+        <label for="first_name">Имя</label>
+        <input type="text" id="first_name" name="first_name" value="{{ current_user.profile.first_name }}" required>
+
+        <label for="middle_name">Отчество (необязательно)</label>
+        <input type="text" id="middle_name" name="middle_name" value="{{ current_user.profile.middle_name or '' }}">
+
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" value="{{ current_user.profile.email or '' }}">
+
+        <label for="phone">Телефон</label>
+        <input type="text" id="phone" name="phone" value="{{ current_user.profile.phone or '' }}">
+
+        <p class="muted">Логин: {{ current_user.username }} (изменить логин нельзя)</p>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</section>
+{% endblock %}

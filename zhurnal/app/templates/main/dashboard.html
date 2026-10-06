@@ -1,0 +1,57 @@
+{% extends "main/_layout.html" %}
+
+{% block title %}Мои группы — Журнал успеваемости{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Мои группы</h1>
+</div>
+
+{# Форма поиска групп: GET-запрос, параметр ?q= читается через request.args #}
+<form method="GET" action="{{ url_for('main.dashboard') }}" class="search-form">
+    <input type="text" name="q" placeholder="Поиск группы по названию..." value="{{ query }}">
+    <button type="submit" class="btn btn-secondary">Найти</button>
+    {% if query %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn-link">Сбросить</a>
+    {% endif %}
+</form>
+
+<form method="POST" action="{{ url_for('main.create_group') }}" class="inline-form">
+    <input type="text" name="name" placeholder="Название новой группы (например, ПИ-21-1)" required>
+    <button type="submit" class="btn btn-primary">+ Добавить группу</button>
+</form>
+
+{% if groups %}
+<div class="card-grid">
+    {% for group in groups %}
+    <div class="card">
+        <h2><a href="{{ url_for('main.group_detail', group_id=group.id) }}">{{ group.name }}</a></h2>
+        <p class="card-meta">Студентов: {{ group.students|length }}</p>
+        <p class="card-meta">
+            Предметы:
+            {% if group.subjects %}
+                {{ group.subjects|map(attribute='name')|join(', ') }}
+            {% else %}
+                <span class="muted">не назначены</span>
+            {% endif %}
+        </p>
+        <div class="card-actions">
+            <a href="{{ url_for('main.group_detail', group_id=group.id) }}" class="btn btn-secondary">Открыть</a>
+            <form method="POST" action="{{ url_for('main.delete_group', group_id=group.id) }}"
+                  onsubmit="return confirm('Удалить группу вместе со всеми студентами и оценками?');">
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="empty-state">
+    {% if query %}
+        По запросу «{{ query }}» ничего не найдено.
+    {% else %}
+        У вас пока нет групп. Добавьте первую группу выше.
+    {% endif %}
+</p>
+{% endif %}
+{% endblock %}

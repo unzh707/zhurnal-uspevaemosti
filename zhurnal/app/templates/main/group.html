@@ -1,0 +1,94 @@
+{% extends "main/_layout.html" %}
+
+{% block title %}{{ group.name }} — Журнал успеваемости{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Группа {{ group.name }}</h1>
+    <a href="{{ url_for('main.dashboard') }}" class="btn-link">&larr; ко всем группам</a>
+</div>
+
+<section class="panel">
+    <h3>Предметы группы</h3>
+    <div class="chip-row">
+        {% for subject in group.subjects %}
+            <span class="chip">{{ subject.name }}</span>
+        {% else %}
+            <span class="muted">Предметы ещё не назначены</span>
+        {% endfor %}
+    </div>
+    <form method="POST" action="{{ url_for('main.link_subject', group_id=group.id) }}" class="inline-form">
+        <input type="text" name="subject_name" list="subjects-list" placeholder="Название предмета" required>
+        <datalist id="subjects-list">
+            {% for subject in all_subjects %}
+                <option value="{{ subject.name }}">
+            {% endfor %}
+        </datalist>
+        <button type="submit" class="btn btn-secondary">+ Добавить предмет</button>
+    </form>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <h3>Студенты</h3>
+        {# Поиск студента внутри группы: GET-параметр ?search= #}
+        <form method="GET" action="{{ url_for('main.group_detail', group_id=group.id) }}" class="search-form">
+            <input type="text" name="search" placeholder="Поиск по ФИО..." value="{{ search }}">
+            <button type="submit" class="btn btn-secondary">Найти</button>
+            {% if search %}
+                <a href="{{ url_for('main.group_detail', group_id=group.id) }}" class="btn-link">Сбросить</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.add_student', group_id=group.id) }}" class="inline-form">
+        <input type="text" name="last_name" placeholder="Фамилия" required>
+        <input type="text" name="first_name" placeholder="Имя" required>
+        <input type="text" name="middle_name" placeholder="Отчество">
+        <input type="date" name="birth_date">
+        <button type="submit" class="btn btn-primary">+ Добавить студента</button>
+    </form>
+
+    {% if students %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Дата рождения</th>
+                <th>Средний балл</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td><a href="{{ url_for('main.student_detail', student_id=student.id) }}">{{ student.full_name }}</a></td>
+                <td>{{ student.birth_date.strftime('%d.%m.%Y') if student.birth_date else '—' }}</td>
+                <td>
+                    {% if student.average_grade %}
+                        <span class="badge">{{ student.average_grade }}</span>
+                    {% else %}
+                        <span class="muted">нет оценок</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('main.delete_student', group_id=group.id, student_id=student.id) }}"
+                          onsubmit="return confirm('Удалить студента вместе с его оценками?');">
+                        <button type="submit" class="btn btn-danger btn-small">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">
+        {% if search %}
+            По запросу «{{ search }}» никого не найдено.
+        {% else %}
+            В группе пока нет студентов.
+        {% endif %}
+    </p>
+    {% endif %}
+</section>
+{% endblock %}

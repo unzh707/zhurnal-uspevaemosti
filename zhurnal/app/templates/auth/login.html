@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Вход — Журнал успеваемости{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h1>Вход в систему</h1>
+    <p class="auth-subtitle">Введите логин и пароль преподавателя.</p>
+
+    <form method="POST" action="{{ url_for('auth.login') }}" class="form">
+        <label for="username">Логин</label>
+        <input type="text" id="username" name="username" value="{{ username or '' }}" required autofocus>
+
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required>
+
+        <label class="checkbox-row">
+            <input type="checkbox" name="remember">
+            Запомнить меня
+        </label>
+
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+
+    <p class="auth-footer">
+        Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация — Журнал успеваемости{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h1>Регистрация преподавателя</h1>
+    <p class="auth-subtitle">Создайте учётную запись, чтобы вести журнал своих групп.</p>
+
+    <form method="POST" action="{{ url_for('auth.register') }}" class="form">
+        <label for="last_name">Фамилия</label>
+        <input type="text" id="last_name" name="last_name" value="{{ last_name or '' }}" required>
+
+        <label for="first_name">Имя</label>
+        <input type="text" id="first_name" name="first_name" value="{{ first_name or '' }}" required>
+
+        <label for="middle_name">Отчество (необязательно)</label>
+        <input type="text" id="middle_name" name="middle_name" value="{{ middle_name or '' }}">
+
+        <label for="username">Логин</label>
+        <input type="text" id="username" name="username" value="{{ username or '' }}" required>
+
+        <label for="email">E-mail (необязательно)</label>
+        <input type="email" id="email" name="email" value="{{ email or '' }}">
+
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required minlength="6">
+
+        <label for="password2">Повторите пароль</label>
+        <input type="password" id="password2" name="password2" required minlength="6">
+
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+
+    <p class="auth-footer">
+        Уже есть аккаунт? <a href="{{ url_for('auth.login') }}">Войти</a>
+    </p>
+</div>
+{% endblock %}
